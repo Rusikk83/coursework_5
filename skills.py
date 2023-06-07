@@ -15,17 +15,17 @@ class Skill(ABC):
     @property
     @abstractmethod
     def name(self):
-        pass
+        return self.name
 
     @property
     @abstractmethod
     def stamina(self):
-        pass
+        return self.stamina
 
     @property
     @abstractmethod
     def damage(self):
-        pass
+        return self.damage
 
     @abstractmethod
     def skill_effect(self) -> str:
@@ -42,14 +42,15 @@ class Skill(ABC):
         self.user = user
         self.target = target
         if self._is_stamina_enough:
+            self.user._is_skill_used = True
             return self.skill_effect()
         return f"{self.user.name} попытался использовать {self.name} но у него не хватило выносливости."
 
 
 class FuryPunch(Skill):
-    name = ...
-    stamina = ...
-    damage = ...
+    name = "Свирепый пинок"
+    stamina = 6
+    damage = 12
 
     def skill_effect(self):
         # TODO логика использования скилла -> return str
@@ -57,12 +58,23 @@ class FuryPunch(Skill):
         # TODO именно здесь происходит уменшение стамины у игрока применяющего умение и
         # TODO уменьшение здоровья цели.
         # TODO результат применения возвращаем строкой
-        pass
+        self.target.hp = round(self.target.hp - self.damage, 1) if self.target.hp > self.damage else 0
+        self.user.stamina -= self.stamina
+        if self.target.hp > 0:
+            return f"{self.user.name}, используя умение {self.name}, поражает  соперника и наносит {self.damage} урона."
+        else:
+            return f"{self.user.name}, используя умение {self.name}, отправляет соперника в нокаут"
+
 
 class HardShot(Skill):
-    name = ...
-    stamina = ...
-    damage = ...
+    name = "Мощный укол"
+    stamina = 5
+    damage = 15
 
     def skill_effect(self):
-        pass
+        self.target.hp = round(self.target.hp - self.damage, 1) if self.target.hp > self.damage else 0
+        self.user.stamina -= self.stamina
+        if self.target.hp > 0:
+            return f"{self.user.name}, используя умение {self.name}, поражает  соперника и наносит {self.damage} урона."
+        else:
+            return f"{self.user.name}, используя умение {self.name}, отправляет соперника в нокаут"
